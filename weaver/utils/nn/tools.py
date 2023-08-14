@@ -279,7 +279,7 @@ def evaluate_onnx(model_path, test_loader, eval_metrics=['roc_auc_score', 'roc_a
     return total_correct / count, scores, labels, observers
 
 
-def train_regression(model, loss_func, opt, scheduler, train_loader, dev, epoch, steps_per_epoch=None, grad_scaler=None, tb_helper=None):
+def train_regression(model, loss_func, opt, scheduler, train_loader, dev, epoch, steps_per_epoch=None, grad_scaler=None, tb_helper=None, extrainput=None):
     model.train()
 
     data_config = train_loader.dataset.config
@@ -297,11 +297,17 @@ def train_regression(model, loss_func, opt, scheduler, train_loader, dev, epoch,
             num_examples = label.shape[0]
             label = label.to(dev)
             opt.zero_grad()
+            #option for disco added
+            if extrainput is not None:
+                discovar = X[extrainput] 
             with torch.cuda.amp.autocast(enabled=grad_scaler is not None):
                 model_output = model(*inputs)
                 preds = model_output.squeeze()
-                loss = loss_func(preds, label)
-            if grad_scaler is None:
+                if extrainput is not None:
+                    loss = loss_func(preds, label, discovar)
+                else:
+                    loss = loss_func(preds, label)
+                if grad_scaler is None:
                 loss.backward()
                 opt.step()
             else:

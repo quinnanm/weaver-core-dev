@@ -74,6 +74,10 @@ parser.add_argument('--load-model-weights', type=str, default=None,
                     help='initialize model with pre-trained weights')
 parser.add_argument('--num-epochs', type=int, default=20,
                     help='number of epochs')
+parser.add_argument('--disco-lambda', type=float, default=0.0,
+                    help='constant for disco')
+parser.add_argument('--discovar', type=float, default="",
+                    help='variable to decorrelate against with disco if applicable')
 parser.add_argument('--steps-per-epoch', type=int, default=None,
                     help='number of steps (iterations) per epochs; '
                          'if neither of `--steps-per-epoch` or `--samples-per-epoch` is set, each epoch will run over all loaded samples')
@@ -546,6 +550,8 @@ def model_setup(args, data_config):
         network_options['for_inference'] = True
     if args.use_amp:
         network_options['use_amp'] = True
+    if args.disco_lambda>0.0:
+        network_options['disco_lambda'] = disco_lambda
     model, model_info = network_module.get_model(data_config, **network_options)
     if args.compile_model:
         model = torch.compile(model)
@@ -774,6 +780,7 @@ def _main(args):
         # training loop
         best_valid_metric = np.inf if args.train_mode in ['regression', 'hybrid'] else 0
         grad_scaler = torch.cuda.amp.GradScaler() if args.use_amp else None
+        extrainput = args.discovar if len(args.discovar)>0 else None
         for epoch in range(args.num_epochs):
             if args.load_epoch is not None:
                 if epoch <= args.load_epoch:
@@ -781,7 +788,7 @@ def _main(args):
             _logger.info('-' * 50)
             _logger.info('Epoch #%d training' % epoch)
             train(model, loss_func, opt, scheduler, train_loader, dev, epoch,
-                  steps_per_epoch=args.steps_per_epoch, grad_scaler=grad_scaler, tb_helper=tb)
+                  steps_per_epoch=args.steps_per_epoch, grad_scaler=grad_scaler, tb_helper=tb, extrainput=extrainput)
             if args.model_prefix and (args.backend is None or local_rank == 0):
                 dirname = os.path.dirname(args.model_prefix)
                 if dirname and not os.path.exists(dirname):

@@ -545,15 +545,13 @@ def model_setup(args, data_config):
     """
     network_module = import_module(args.network_config, name='_network_module')
     network_options = {k: ast.literal_eval(v) for k, v in args.network_option}
-    _logger.info('Network options: %s' % str(network_options))
     if args.export_onnx:
         network_options['for_inference'] = True
     if args.use_amp:
         network_options['use_amp'] = True
     if args.discolambda>0.0:
         network_options['discolambda'] = discolambda
-    print ("NETWORK OPTIONS")
-    print(network_options)
+    _logger.info('Network options: %s' % str(network_options))
     model, model_info = network_module.get_model(data_config, **network_options)
     if args.compile_model:
         model = torch.compile(model)

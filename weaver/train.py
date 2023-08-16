@@ -550,7 +550,7 @@ def model_setup(args, data_config):
     if args.use_amp:
         network_options['use_amp'] = True
     if args.discolambda>0.0:
-        network_options['discolambda'] = discolambda
+        network_options['discolambda'] = args.discolambda
     _logger.info('Network options: %s' % str(network_options))
     model, model_info = network_module.get_model(data_config, **network_options)
     if args.compile_model:

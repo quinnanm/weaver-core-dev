@@ -58,6 +58,9 @@ def get_model(data_config, **kwargs):
         layer_params=(),
     )
     cfg.update(**kwargs)
+    #stupid workaround for network config setup:
+    if 'discolambda' in cfg.keys():
+        del cfg['discolambda']
     preinput_dims = len(data_config.input_dicts['basic'])
     input_dims = len(data_config.input_dicts['highlevel'])
     num_classes = 1
@@ -113,3 +116,4 @@ class DiscoLoss(torch.nn.L1Loss):
 def get_loss(data_config, **kwargs):
     disco_lambda = kwargs.get("discolambda")
     return DiscoLoss(discolambda=disco_lambda)
+OB

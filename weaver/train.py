@@ -76,7 +76,7 @@ parser.add_argument('--num-epochs', type=int, default=20,
                     help='number of epochs')
 parser.add_argument('--disco-lambda', type=float, default=0.0,
                     help='constant for disco')
-parser.add_argument('--discovar', type=float, default="",
+parser.add_argument('--discovar', type=str, default="",
                     help='variable to decorrelate against with disco if applicable')
 parser.add_argument('--steps-per-epoch', type=int, default=None,
                     help='number of steps (iterations) per epochs; '

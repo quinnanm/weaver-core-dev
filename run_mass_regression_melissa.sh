@@ -14,7 +14,6 @@ python -u weaver/train.py \
  --num-workers 0 \
  --in-memory \
  --steps-per-epoch=1 \
- --tensorboard _v10_load \
  --load-model-weights finetune_gghww_custom \
  --discolambda 100.0 \
  --discovar fj_ParT_inclusive_score \

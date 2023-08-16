@@ -57,6 +57,7 @@ inputs:
          - fj_phi
          - met_relpt
          - met_relphi
+	 - fj_ParT_inclusive_score
    highlevel:
       length: null
       vars:

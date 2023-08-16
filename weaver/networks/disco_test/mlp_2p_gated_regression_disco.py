@@ -111,5 +111,5 @@ class DiscoLoss(torch.nn.L1Loss):
         return loss
         
 def get_loss(data_config, **kwargs):
-    disco_lambda = kwargs.get("disco_lambda")
+    disco_lambda = kwargs.get("discolambda")
     return DiscoLoss(discolambda=disco_lambda)

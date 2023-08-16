@@ -299,7 +299,7 @@ def train_regression(model, loss_func, opt, scheduler, train_loader, dev, epoch,
             opt.zero_grad()
             #option for disco added
             if extrainput is not None:
-                discovar = X[extrainput] 
+                discovar = X[extrainput]
             with torch.cuda.amp.autocast(enabled=grad_scaler is not None):
                 model_output = model(*inputs)
                 preds = model_output.squeeze()

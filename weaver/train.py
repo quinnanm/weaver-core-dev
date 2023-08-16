@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env pytOAhon
 
 import os
 import ast
@@ -74,7 +74,7 @@ parser.add_argument('--load-model-weights', type=str, default=None,
                     help='initialize model with pre-trained weights')
 parser.add_argument('--num-epochs', type=int, default=20,
                     help='number of epochs')
-parser.add_argument('--disco-lambda', type=float, default=0.0,
+parser.add_argument('--discolambda', type=float, default=0.0,
                     help='constant for disco')
 parser.add_argument('--discovar', type=str, default="",
                     help='variable to decorrelate against with disco if applicable')
@@ -550,8 +550,8 @@ def model_setup(args, data_config):
         network_options['for_inference'] = True
     if args.use_amp:
         network_options['use_amp'] = True
-    if args.disco_lambda>0.0:
-        network_options['disco_lambda'] = disco_lambda
+    if args.discolambda>0.0:
+        network_options['discolambda'] = discolambda
     model, model_info = network_module.get_model(data_config, **network_options)
     if args.compile_model:
         model = torch.compile(model)

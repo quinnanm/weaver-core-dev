@@ -1,7 +1,7 @@
 #!/bin/bash
 
 python -u weaver/train.py \
- --gpu "0,1" \
+ --gpu "0" \
  --train-mode regression \
  --batch-size 768 --start-lr 6.75e-4 --num-epochs 3000 --optimizer ranger \
  --data-train '/fmhwwvol/ntuples/*/train/*.root' \

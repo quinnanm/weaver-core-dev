@@ -307,7 +307,7 @@ def train_regression(model, loss_func, opt, scheduler, train_loader, dev, epoch,
                     loss = loss_func(preds, label, discovar)
                 else:
                     loss = loss_func(preds, label)
-                if grad_scaler is None:
+            if grad_scaler is None:
                 loss.backward()
                 opt.step()
             else:

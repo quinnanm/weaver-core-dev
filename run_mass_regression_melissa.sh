@@ -7,7 +7,7 @@ python -u weaver/train.py \
  --data-train '/fmhwwvol/ntuples/*/train/*.root' \
  --data-test '/fmhwwvol/ntuples/*/test/*.root' \
  --data-config weaver/data_new/finetune/FM_ak8_mass_regression_v10.yaml \
- --network-config weaver/networks/disco_test/mlp_2p_gated_regression_disco.py \
+ --network-config mqweaver/networks/disco_test/mlp_2p_gated_regression_disco.py \
  --model-prefix /fmhwwvol/mq_experiments/mass_regression_disco_v1/model \
  --log-file /fmhwwvol/mq_experiments/mass_regression_disco_v1/logs/train.log \
  --predict-output /fmhwwvol/mq_experiments/mass_regression_disco_v1/predict/pred.root \
@@ -16,5 +16,7 @@ python -u weaver/train.py \
  --steps-per-epoch=1 \
  --tensorboard _v10_load \
  --load-model-weights finetune_gghww_custom \
-
-mv runs/* /fmhwwvol/runs/
+ --discolambda 100.0 \
+ --discovar fj_ParT_inclusive_score \
+ 
+mv runs/* /fmhwwvol/runs_melissa/

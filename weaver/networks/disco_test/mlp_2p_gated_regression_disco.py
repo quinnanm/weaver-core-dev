@@ -93,9 +93,9 @@ class LogCoshLoss(torch.nn.L1Loss):
 class DiscoLoss(torch.nn.L1Loss):
     __constants__ = ['reduction']
 
-    def __init__(self, reduction: str = 'mean', lambda:float = 0.0) -> None:
+    def __init__(self, reduction: str = 'mean', discolambda=0.0) -> None:
         super(DiscoLoss, self).__init__(None, None, reduction)
-        self.lambda = lambda
+        self.discolambda = discolambda
         self.logcoshloss = LogCoshLoss()
         
     def forward(self, input: Tensor, target: Tensor, decorvar: Tensor) -> Tensor:
@@ -107,9 +107,9 @@ class DiscoLoss(torch.nn.L1Loss):
         #calculate using function from https://github.com/gkasieczka/DisCo/blob/master/Disco.py
         disco = distance_corr(target, decorvar, weight)
 
-        loss = lcloss + lambda*disco
+        loss = lcloss + discolambda*disco
         return loss
         
 def get_loss(data_config, **kwargs):
-    lambda = kwargs.get("disco_lambda")
-    return DiscoLoss(lambda=lambda)
+    disco_lambda = kwargs.get("disco_lambda")
+    return DiscoLoss(discolambda=disco_lambda)

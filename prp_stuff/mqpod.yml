@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: melissas-weaver-pod
+spec:
+  # nodeName: suncave-27  
+  containers:
+  - name: gpu-container
+    image: gitlab-registry.nrp-nautilus.io/jmduarte/weaver
+    command: ["/bin/bash", "-c", "git clone https://github.com/quinnanm/weaver-core-dev.git && git config --global user.email mkq5008@gmail.com && git config --global user.name quinnanm && alias tb='python -m tensorboard.main --logdir=runs/' && sleep infinity"]
+    resources:
+      limits:
+        nvidia.com/gpu: 1
+        memory: 12Gi
+        cpu: 2
+        ephemeral-storage: 20Gi
+      requests:
+        nvidia.com/gpu: 1
+        memory: 8Gi
+        cpu: 2
+        ephemeral-storage: 20Gi
+    volumeMounts:
+    - mountPath: /fmhwwvol
+      name: fmhwwvol
+    - mountPath: /dev/shm
+      name: dshm
+  # nodeSelector:
+  #   disktype: ssd
+  restartPolicy: Never
+  volumes:
+    - name: fmhwwvol
+      persistentVolumeClaim:
+        claimName: fmhwwvol
+    - name: dshm
+      emptyDir:
+        medium: Memory
+  affinity:
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: nvidia.com/gpu.product
+            operator: In
+            values:
+            - NVIDIA-GeForce-GTX-1080-Ti

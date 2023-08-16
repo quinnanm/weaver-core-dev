@@ -93,7 +93,7 @@ class LogCoshLoss(torch.nn.L1Loss):
 class DiscoLoss(torch.nn.L1Loss):
     __constants__ = ['reduction']
 
-    def __init__(self, reduction: str = 'mean', lambda = 0.0) -> None:
+    def __init__(self, reduction: str = 'mean', lambda:float = 0.0) -> None:
         super(DiscoLoss, self).__init__(None, None, reduction)
         self.lambda = lambda
         self.logcoshloss = LogCoshLoss()

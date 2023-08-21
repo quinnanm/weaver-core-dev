@@ -780,7 +780,7 @@ def _main(args):
         # training loop
         best_valid_metric = np.inf if args.train_mode in ['regression', 'hybrid'] else 0
         grad_scaler = torch.cuda.amp.GradScaler() if args.use_amp else None
-        extrainput = args.discovar if len(args.discovar)>0 else None
+        discokey = args.discovar if len(args.discovar)>0 else None
         for epoch in range(args.num_epochs):
             if args.load_epoch is not None:
                 if epoch <= args.load_epoch:
@@ -788,7 +788,7 @@ def _main(args):
             _logger.info('-' * 50)
             _logger.info('Epoch #%d training' % epoch)
             train(model, loss_func, opt, scheduler, train_loader, dev, epoch,
-                  steps_per_epoch=args.steps_per_epoch, grad_scaler=grad_scaler, tb_helper=tb, extrainput=extrainput)
+                  steps_per_epoch=args.steps_per_epoch, grad_scaler=grad_scaler, tb_helper=tb, discokey=discokey)
             if args.model_prefix and (args.backend is None or local_rank == 0):
                 dirname = os.path.dirname(args.model_prefix)
                 if dirname and not os.path.exists(dirname):
@@ -838,7 +838,7 @@ def _main(args):
             if gpus is not None and len(gpus) > 1:
                 model = torch.nn.DataParallel(model, device_ids=gpus)
             model = model.to(dev)
-
+        discokey = args.discovar if len(args.discovar)>0 else None
         for name, get_test_loader in test_loaders.items():
             test_loader = get_test_loader()
             # run prediction
@@ -848,7 +848,7 @@ def _main(args):
                 test_metric, scores, labels, observers = evaluate_onnx(args.model_prefix, test_loader)
             else:
                 test_metric, scores, labels, observers = evaluate(
-                    model, test_loader, dev, epoch=None, for_training=False, tb_helper=tb)
+                    model, test_loader, dev, epoch=None, for_training=False, tb_helper=tb, discokey=discokey)
             _logger.info('Test metric %.5f' % test_metric, color='bold')
             del test_loader
 

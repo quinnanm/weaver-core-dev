@@ -279,7 +279,7 @@ def evaluate_onnx(model_path, test_loader, eval_metrics=['roc_auc_score', 'roc_a
     return total_correct / count, scores, labels, observers
 
 
-def train_regression(model, loss_func, opt, scheduler, train_loader, dev, epoch, steps_per_epoch=None, grad_scaler=None, tb_helper=None, extrainput=None):
+def train_regression(model, loss_func, opt, scheduler, train_loader, dev, epoch, steps_per_epoch=None, grad_scaler=None, tb_helper=None, discokey=None):
     model.train()
 
     data_config = train_loader.dataset.config
@@ -290,6 +290,7 @@ def train_regression(model, loss_func, opt, scheduler, train_loader, dev, epoch,
     sum_sqr_err = 0
     count = 0
     start_time = time.time()
+    discovar = None
     with tqdm.tqdm(train_loader) as tq:
         for X, y, _ in tq:
             inputs = [X[k].to(dev) for k in data_config.input_names]
@@ -297,13 +298,11 @@ def train_regression(model, loss_func, opt, scheduler, train_loader, dev, epoch,
             num_examples = label.shape[0]
             label = label.to(dev)
             opt.zero_grad()
-            #option for disco added
-            if extrainput is not None:
-                discovar = X[extrainput]
             with torch.cuda.amp.autocast(enabled=grad_scaler is not None):
                 model_output = model(*inputs)
                 preds = model_output.squeeze()
-                if extrainput is not None:
+                if discokey is not None:
+                    discovar = [X[discokey].to(dev)]
                     loss = loss_func(preds, label, discovar)
                 else:
                     loss = loss_func(preds, label)
@@ -376,7 +375,7 @@ def train_regression(model, loss_func, opt, scheduler, train_loader, dev, epoch,
 def evaluate_regression(model, test_loader, dev, epoch, for_training=True, loss_func=None, steps_per_epoch=None,
                         eval_metrics=['mean_squared_error', 'mean_absolute_error', 'median_absolute_error',
                                       'mean_gamma_deviance'],
-                        tb_helper=None):
+                        tb_helper=None, discokey=None):
     model.eval()
 
     data_config = test_loader.dataset.config
@@ -390,6 +389,7 @@ def evaluate_regression(model, test_loader, dev, epoch, for_training=True, loss_
     labels = defaultdict(list)
     observers = defaultdict(list)
     start_time = time.time()
+    discovar = None
     with torch.no_grad():
         with tqdm.tqdm(test_loader) as tq:
             for X, y, Z in tq:
@@ -407,8 +407,15 @@ def evaluate_regression(model, test_loader, dev, epoch, for_training=True, loss_
                     for k, v in Z.items():
                         observers[k].append(v.cpu().numpy())
 
-                loss = 0 if loss_func is None else loss_func(preds, label).item()
-
+                if loss_func is None:
+                    loss = 0
+                else:
+                    if discokey is not None:
+                        discovar = [X[discokey].to(dev)]
+                        loss_func(preds, label, discovar).item()
+                    else:
+                        loss_func(preds, label).item()
+                    
                 num_batches += 1
                 count += num_examples
                 total_loss += loss * num_examples

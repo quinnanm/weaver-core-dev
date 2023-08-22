@@ -57,7 +57,6 @@ inputs:
          - fj_phi
          - met_relpt
          - met_relphi
-         - fj_ParT_inclusive_score
    highlevel:
       length: null
       vars:
@@ -217,6 +216,10 @@ observers:
     - class_Top_bW
     - class_Top_unmatched
     - fj_ParT_mass
+    - fj_ParT_inclusive_score
+    
+discovar:
+    - fj_ParT_inclusive_score
 
 weights:
     ### [option 1] use precomputed weights stored in the input files

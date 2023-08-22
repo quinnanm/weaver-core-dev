@@ -1,4 +1,4 @@
-#!/usr/bin/env pytOAhon
+#!/usr/bin/env python
 
 import os
 import ast

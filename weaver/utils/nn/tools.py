@@ -302,8 +302,10 @@ def train_regression(model, loss_func, opt, scheduler, train_loader, dev, epoch,
                 model_output = model(*inputs)
                 preds = model_output.squeeze()
                 if discokey is not None:
-                    print('VAR:')
-                    print(X, y, _)
+                    print('DISCOVAR')
+                    print data_config.disco_name
+                    #print('VAR:')
+                    #print(X, y, _)
                     #for k, v in _.items():
                        # observers[k].append(v.cpu().numpy())
                     discovar = _[discokey]

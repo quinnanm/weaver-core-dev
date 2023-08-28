@@ -206,6 +206,8 @@ class DataConfig(object):
                 aux_branches.update(self.reweight_classes)
         # observers
         self.keep_branches.update(self.observer_names)
+        # discovar
+        self.keep_branches.update(self.disco_name)
         # monitor variables
         self.keep_branches.update(self.monitor_variables)
         # keep and drop

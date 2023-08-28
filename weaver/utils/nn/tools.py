@@ -290,7 +290,7 @@ def train_regression(model, loss_func, opt, scheduler, train_loader, dev, epoch,
     sum_sqr_err = 0
     count = 0
     start_time = time.time()
-    discovar = None
+    var = None
     with tqdm.tqdm(train_loader) as tq:
         for X, y, _ in tq:
             inputs = [X[k].to(dev) for k in data_config.input_names]
@@ -302,10 +302,10 @@ def train_regression(model, loss_func, opt, scheduler, train_loader, dev, epoch,
                 model_output = model(*inputs)
                 preds = model_output.squeeze()
                 if discokey is not None:
-                    print('DISCOVAR:')
+                    print('VAR:')
                     print(X, y, _)
-                     #for k, v in _.items():
-                      #  observers[k].append(v.cpu().numpy())
+                    #for k, v in _.items():
+                       # observers[k].append(v.cpu().numpy())
                     discovar = _[discokey]
                     loss = loss_func(preds, label, discovar)
                 else:

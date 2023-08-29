@@ -195,7 +195,6 @@ def to_filelist(args, mode='train'):
     assert(len(filelist) == len(set(filelist)))
     return file_dict, filelist
 
-
 def train_load(args):
     """
     Loads the training data.
@@ -788,7 +787,7 @@ def _main(args):
             _logger.info('-' * 50)
             _logger.info('Epoch #%d training' % epoch)
             train(model, loss_func, opt, scheduler, train_loader, dev, epoch,
-                  steps_per_epoch=args.steps_per_epoch, grad_scaler=grad_scaler, tb_helper=tb, discokey=discokey)
+                  steps_per_epoch=args.steps_per_epoch, grad_scaler=grad_scaler, tb_helper=tb, discokey=val_loader)
             if args.model_prefix and (args.backend is None or local_rank == 0):
                 dirname = os.path.dirname(args.model_prefix)
                 if dirname and not os.path.exists(dirname):

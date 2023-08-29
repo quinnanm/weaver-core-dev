@@ -41,9 +41,9 @@ def distance_corr(var_1,var_2,normedweight=None,power=1):
         elif(power==2):
             dCorr=(torch.mean(ABavg*normedweight))**2/(torch.mean(AAavg*normedweight)*torch.mean(BBavg*normedweight))
         else:
-            dCorr=((torch.mean(ABavg*normedweight))/torch.sqrt((torch.mean(AAavg*normedweight)*torch.mean(BBavg*normedweight))))**power
-            
-     else:
+            dCorr=((torch.mean(ABavg*normedweight))/torch.sqrt((torch.mean(AAavg*normedweight)*torch.mean(BBavg*normedweight))))**power      
+   
+    else:
         amatavg = torch.mean(amat,dim=1)
         Amat=amat-amatavg.repeat(len(var_1),1).view(len(var_1),len(var_1))\
             -amatavg.view(-1, 1).repeat(1, len(var_1)).view(len(var_1),len(var_1))\

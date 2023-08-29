@@ -102,7 +102,7 @@ class DiscoLoss(torch.nn.L1Loss):
         self.logcoshloss = LogCoshLoss()
         
     def forward(self, input: Tensor, target: Tensor, decorvar: Tensor) -> Tensor:
-        lcloss = logcoshloss(input, target)
+        lcloss = self.logcoshloss(input, target)
 
         #dont know what to put for the normedweight so just setting weights to 1
         weight = torch.ones_like(target)
@@ -110,7 +110,7 @@ class DiscoLoss(torch.nn.L1Loss):
         #calculate using function from https://github.com/gkasieczka/DisCo/blob/master/Disco.py
         disco = distance_corr(target, decorvar, weight)
 
-        loss = lcloss + discolambda*disco
+        loss = lcloss + self.discolambda*disco
         return loss
         
 def get_loss(data_config, **kwargs):

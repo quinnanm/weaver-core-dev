@@ -306,7 +306,7 @@ def train_regression(model, loss_func, opt, scheduler, train_loader, dev, epoch,
                     print(data_config.disco_name)
                     #print discokey[data_config.disco_name)] #is now val_loader
                     for k, v in _.items():
-                        print(k,v)
+                        print(_,k,v)
                        # observers[k].append(v.cpu().numpy())
                     discovar = _[discokey]
                     loss = loss_func(preds, label, discovar)

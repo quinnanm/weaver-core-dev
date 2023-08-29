@@ -1,7 +1,7 @@
 # from https://github.com/gkasieczka/DisCo/blob/master/Disco.py
 import torch
 
-def distance_corr(var_1,var_2,normedweight,power=1):
+def distance_corr(var_1,var_2,normedweight=None,power=1):
     """var_1: First variable to decorrelate (eg mass)
     var_2: Second variable to decorrelate (eg classifier output)
     normedweight: Per-example weight. Sum of weights should add up to N (where N is the number of examples)
@@ -21,25 +21,48 @@ def distance_corr(var_1,var_2,normedweight,power=1):
     yy = var_2.repeat(len(var_2),1).view(len(var_2),len(var_2))
     bmat = (xx-yy).abs()
 
-    amatavg = torch.mean(amat*normedweight,dim=1)
-    Amat=amat-amatavg.repeat(len(var_1),1).view(len(var_1),len(var_1))\
-        -amatavg.view(-1, 1).repeat(1, len(var_1)).view(len(var_1),len(var_1))\
-        +torch.mean(amatavg*normedweight)
+    if normedweight is not None:
+        amatavg = torch.mean(amat*normedweight,dim=1)
+        Amat=amat-amatavg.repeat(len(var_1),1).view(len(var_1),len(var_1))\
+            -amatavg.view(-1, 1).repeat(1, len(var_1)).view(len(var_1),len(var_1))\
+            +torch.mean(amatavg*normedweight)
 
-    bmatavg = torch.mean(bmat*normedweight,dim=1)
-    Bmat=bmat-bmatavg.repeat(len(var_2),1).view(len(var_2),len(var_2))\
-        -bmatavg.view(-1, 1).repeat(1, len(var_2)).view(len(var_2),len(var_2))\
-        +torch.mean(bmatavg*normedweight)
+        bmatavg = torch.mean(bmat*normedweight,dim=1)
+        Bmat=bmat-bmatavg.repeat(len(var_2),1).view(len(var_2),len(var_2))\
+            -bmatavg.view(-1, 1).repeat(1, len(var_2)).view(len(var_2),len(var_2))\
+            +torch.mean(bmatavg*normedweight)
 
-    ABavg = torch.mean(Amat*Bmat*normedweight,dim=1)
-    AAavg = torch.mean(Amat*Amat*normedweight,dim=1)
-    BBavg = torch.mean(Bmat*Bmat*normedweight,dim=1)
+        ABavg = torch.mean(Amat*Bmat*normedweight,dim=1)
+        AAavg = torch.mean(Amat*Amat*normedweight,dim=1)
+        BBavg = torch.mean(Bmat*Bmat*normedweight,dim=1)
 
-    if(power==1):
-        dCorr=(torch.mean(ABavg*normedweight))/torch.sqrt((torch.mean(AAavg*normedweight)*torch.mean(BBavg*normedweight)))
-    elif(power==2):
-        dCorr=(torch.mean(ABavg*normedweight))**2/(torch.mean(AAavg*normedweight)*torch.mean(BBavg*normedweight))
-    else:
-        dCorr=((torch.mean(ABavg*normedweight))/torch.sqrt((torch.mean(AAavg*normedweight)*torch.mean(BBavg*normedweight))))**power
-    
+        if(power==1):
+            dCorr=(torch.mean(ABavg*normedweight))/torch.sqrt((torch.mean(AAavg*normedweight)*torch.mean(BBavg*normedweight)))
+        elif(power==2):
+            dCorr=(torch.mean(ABavg*normedweight))**2/(torch.mean(AAavg*normedweight)*torch.mean(BBavg*normedweight))
+        else:
+            dCorr=((torch.mean(ABavg*normedweight))/torch.sqrt((torch.mean(AAavg*normedweight)*torch.mean(BBavg*normedweight))))**power
+            
+     else:
+        amatavg = torch.mean(amat,dim=1)
+        Amat=amat-amatavg.repeat(len(var_1),1).view(len(var_1),len(var_1))\
+            -amatavg.view(-1, 1).repeat(1, len(var_1)).view(len(var_1),len(var_1))\
+            +torch.mean(amatavg)
+
+        bmatavg = torch.mean(bmat,dim=1)
+        Bmat=bmat-bmatavg.repeat(len(var_2),1).view(len(var_2),len(var_2))\
+            -bmatavg.view(-1, 1).repeat(1, len(var_2)).view(len(var_2),len(var_2))\
+            +torch.mean(bmatavg)
+
+        ABavg = torch.mean(Amat*Bmat,dim=1)
+        AAavg = torch.mean(Amat*Amat,dim=1)
+        BBavg = torch.mean(Bmat*Bmat,dim=1)
+
+        if(power==1):
+            dCorr=(torch.mean(ABavg))/torch.sqrt((torch.mean(AAavg)*torch.mean(BBavg)))
+        elif(power==2):
+            dCorr=(torch.mean(ABavg))**2/(torch.mean(AAavg)*torch.mean(BBavg))
+        else:
+            dCorr=((torch.mean(ABavg))/torch.sqrt((torch.mean(AAavg)*torch.mean(BBavg))))**power
+  
     return dCorr

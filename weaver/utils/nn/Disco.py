@@ -11,7 +11,10 @@ def distance_corr(var_1,var_2,normedweight=None,power=1):
     
     Usage: Add to your loss function. total_loss = BCE_loss + lambda * distance_corr
     """
-    
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    var_1 = var_1.to(device)
+    var_2 = var_2.to(device)
     
     xx = var_1.view(-1, 1).repeat(1, len(var_1)).view(len(var_1),len(var_1))
     yy = var_1.repeat(len(var_1),1).view(len(var_1),len(var_1))

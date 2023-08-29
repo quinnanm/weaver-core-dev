@@ -105,10 +105,10 @@ class DiscoLoss(torch.nn.L1Loss):
         lcloss = self.logcoshloss(input, target)
 
         #dont know what to put for the normedweight so just setting weights to 1
-        weight = torch.ones_like(target)
+        #weight = torch.ones_like(target) #device issues
 
         #calculate using function from https://github.com/gkasieczka/DisCo/blob/master/Disco.py
-        disco = distance_corr(target, decorvar, weight)
+        disco = distance_corr(target, decorvar)
 
         loss = lcloss + self.discolambda*disco
         return loss

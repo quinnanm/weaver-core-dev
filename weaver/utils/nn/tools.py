@@ -304,9 +304,9 @@ def train_regression(model, loss_func, opt, scheduler, train_loader, dev, epoch,
                 if discokey is not None:
                     print('DISCOVAR')
                     print(data_config.disco_name)
-                    print(X[data_config.disco_name])
-                    print(y[data_config.disco_name])
-                    print(_[data_config.disco_name])
+                    print(X[data_config.disco_name[0]])
+                    print(y[data_config.disco_name[0]])
+                    print(_[data_config.disco_name[0]])
                     #for k, v in _.items():
                        # observers[k].append(v.cpu().numpy())
                     discovar = _[discokey]

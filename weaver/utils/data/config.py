@@ -41,8 +41,7 @@ class DataConfig(object):
             'labels': {},
             'observers': [],
             'monitor_variables': [],
-            'weights': None,
-            'discovar':None,
+            'weights': None
         }
         for k, v in kwargs.items():
             if v is not None:
@@ -118,9 +117,6 @@ class DataConfig(object):
         self.label_names = tuple(self.label_names)
         self.basewgt_name = '_basewgt_'
         self.weight_name = None
-
-        if opts['discovar'] is not None:      
-            self.disco_name = tuple(opts['discovar'])
                 
         if opts['weights'] is not None:
             self.weight_name = 'weight_'
@@ -170,7 +166,6 @@ class DataConfig(object):
             _log('label_names: %s', str(self.label_names))
             _log('observer_names: %s', str(self.observer_names))
             _log('monitor_variables: %s', str(self.monitor_variables))
-            _log('discovar: %s', str(self.discovar))
             if opts['weights'] is not None:
                 if self.use_precomputed_weights:
                     _log('weight: %s' % self.var_funcs[self.weight_name])
@@ -206,8 +201,6 @@ class DataConfig(object):
                 aux_branches.update(self.reweight_classes)
         # observers
         self.keep_branches.update(self.observer_names)
-        # discovar
-        self.keep_branches.update(self.disco_name)
         # monitor variables
         self.keep_branches.update(self.monitor_variables)
         # keep and drop

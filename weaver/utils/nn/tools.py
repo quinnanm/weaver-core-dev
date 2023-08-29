@@ -418,9 +418,9 @@ def evaluate_regression(model, test_loader, dev, epoch, for_training=True, loss_
                 else:
                     if discokey is not None:
                         discovar = Z[discokey]
-                        loss_func(preds, label, discovar).item()
+                        loss = loss_func(preds, label, discovar).item()
                     else:
-                        loss_func(preds, label).item()
+                        loss = loss_func(preds, label).item()
                     
                 num_batches += 1
                 count += num_examples

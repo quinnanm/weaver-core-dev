@@ -302,13 +302,10 @@ def train_regression(model, loss_func, opt, scheduler, train_loader, dev, epoch,
                 model_output = model(*inputs)
                 preds = model_output.squeeze()
                 if discokey is not None:
-                    print('DISCOVAR')
-                    #print(_[discokey])
-                    #print(data_config.disco_name)
-                    #print discokey[data_config.disco_name)] #is now val_loader
-                    for k, v in _.items():
-                        if k==discokey:
-                            print(k,v)
+                  #  print('DISCOVAR')
+                    #for k, v in _.items():
+                       # if k==discokey:
+                         #   print(k,v)
                        # observers[k].append(v.cpu().numpy())
                     discovar = _[discokey]
                     print(type(discovar))
@@ -420,7 +417,7 @@ def evaluate_regression(model, test_loader, dev, epoch, for_training=True, loss_
                     loss = 0
                 else:
                     if discokey is not None:
-                        discovar = [X[discokey].to(dev)]
+                        discovar = _[discokey]
                         loss_func(preds, label, discovar).item()
                     else:
                         loss_func(preds, label).item()

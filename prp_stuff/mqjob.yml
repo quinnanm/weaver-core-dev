@@ -1,0 +1,68 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: melissa-weaver-job
+  labels:
+    app: weavertagger
+spec:
+  template:
+    spec:
+      containers:
+      - name: container
+        image: gitlab-registry.nrp-nautilus.io/jmduarte/weaver
+        command:
+        - "/bin/bash"
+        - "-c"
+        - >
+          alias tb='python -m tensorboard.main --logdir=runs/' &&
+          git clone https://github.com/quinnanm/weaver-core-dev.git &&
+          cd weaver-core-dev &&
+          mkdir -p /fmhwwvol/test_experiments/mass_regression_test &&
+          (python -u weaver/train.py 
+          --gpu "0,1" 
+          --train-mode regression 
+          --batch-size 768 --start-lr 6.75e-3 --num-epochs 3000 --optimizer ranger 
+          --data-train '/fmhwwvol/ntuples/*/train/*.root' 
+          --data-test '/fmhwwvol/ntuples/*/test/*.root' 
+          --data-config weaver/data_new/disco/MQ_ak8_mass_regression_disco_v1000.yaml 
+          --network-config weaver/networks/disco_test/mlp_2p_gated_regression_disco.py 
+          --model-prefix /fmhwwvol/mq_experiments/mass_regression_disco_l1000/model
+          --log-file /fmhwwvol/mq_experiments/mass_regression_disco_l1000/logs/train.log 
+          --predict-output /fmhwwvol/mq_experiments/mass_regression_disco_l1000/predict/pred.root 
+          --num-workers 0
+          --in-memory
+          --steps-per-epoch=1
+          --load-model-weights finetune_gghww_custom
+          --discolambda 1000.0
+          --discovar fj_ParT_inclusive_score
+          --tensorboard _test) &&
+          mv runs/* /fmhwwvol/runs_melissa/
+        volumeMounts:
+        - mountPath: /fmhwwvol
+          name: fmhwwvol
+        resources:
+          limits:
+            memory: 64Gi
+            cpu: "2"
+            nvidia.com/gpu: "2"
+          requests:
+            memory: 12Gi
+            cpu: "2"
+            nvidia.com/gpu: "2"
+      volumes:
+      - name: fmhwwvol
+        persistentVolumeClaim:
+          claimName: fmhwwvol
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              - key: nvidia.com/gpu.product
+                operator: In
+                values:
+                - NVIDIA-GeForce-GTX-1080-Ti
+
+      restartPolicy: Never
+  backoffLimit: 0
+
